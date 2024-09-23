@@ -34,3 +34,11 @@ def list_orders():
     """List all orders."""
     orders = Order.query.all()
     return jsonify([{"id": o.id, "order_date": o.order_date, "customer_id": o.customer_id} for o in orders])
+
+@order_bp.route('/orders/<int:id>', methods=['DELETE'])
+def cancel_order(id):
+    """Cancel an order by ID."""
+    order = Order.query.get_or_404(id)
+    db.session.delete(order)
+    db.session.commit()
+    return jsonify({"message": "Order canceled"})

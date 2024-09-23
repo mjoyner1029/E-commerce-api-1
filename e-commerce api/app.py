@@ -9,7 +9,8 @@ app.register_blueprint(order_bp, url_prefix='/api')
 
 # Create database tables
 with app.app_context():
-    db.create_all()
+    db.drop_all()  # Clear existing tables
+    db.create_all()  # Create new tables
 
 if __name__ == '__main__':
     app.run(debug=True)

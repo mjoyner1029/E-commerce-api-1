@@ -11,7 +11,7 @@ def create_product():
         return jsonify({"error": "Name and price are required."}), 400
 
     try:
-        new_product = Product(name=data['name'], price=data['price'])
+        new_product = Product(name=data['name'], price=data['price'], stock=data.get('stock', 0))
         db.session.add(new_product)
         db.session.commit()
         return jsonify({"id": new_product.id}), 201
@@ -50,3 +50,16 @@ def list_products():
     """List all products."""
     products = Product.query.all()
     return jsonify([{"id": p.id, "name": p.name, "price": p.price, "stock": p.stock} for p in products])
+
+@product_bp.route('/products/<int:id>/stock', methods=['PUT'])
+def update_product_stock(id):
+    """Update product stock levels."""
+    data = request.json
+    product = Product.query.get_or_404(id)
+
+    if 'stock' not in data:
+        return jsonify({"error": "Stock level is required."}), 400
+
+    product.stock = data['stock']
+    db.session.commit()
+    return jsonify({"message": "Product stock updated"})
